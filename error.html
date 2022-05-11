@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="utf-8"> 
+  <link rel="canonical" href="https://blog.csdn.net/qq_37514135/article/details/117196294"> 
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+  <meta name="renderer" content="webkit"> 
+  <meta name="force-rendering" content="webkit"> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+  <meta name="report" content="{&quot;pid&quot;: &quot;blog&quot;, &quot;spm&quot;:&quot;1001.2101&quot;}"> 
+  <meta name="referrer" content="always"> 
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <link rel="alternate" media="handheld" href="#"> 
+  <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848"> 
+  <meta name="applicable-device" content="pc"> 
+  <link href="https://g.csdnimg.cn/static/logo/favicon32.ico" rel="shortcut icon" type="image/x-icon"> 
+  <title>Pytorch 分布式 torch.distributed.send &amp; recv 报错_未知的生活的博客-CSDN博客</title>  
+  <meta name="keywords" content="Pytorch 分布式 torch.distributed.send &amp; recv 报错"> 
+  <meta name="csdn-baidu-search" content="{&quot;autorun&quot;:true,&quot;install&quot;:true,&quot;keyword&quot;:&quot;Pytorch 分布式 torch.distributed.send &amp; recv 报错&quot;}"> 
+  <meta name="description" content="Pytorch 分布式 torch.distributed.send &amp;amp; recv 报错：libc++abi: terminating with uncaught exception of type gloo::EnforceNotMet: [enforce fail at /Users/distiller/project/conda/conda-bld/pytorch_1595629430416/work/third_party/gloo/gloo/transport/uv/pair.cc:248">  
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-d9aa713720.min.css">  
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin-yellow/skin-yellow-28d34ab5fa.min.css">     
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css"> 
+  <style>.MathJax_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%} .MathJax .merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%} .MathJax .MJX-monospace {font-family: monospace} .MathJax .MJX-sans-serif {font-family: sans-serif} #MathJax_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true'); padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none} .MathJax {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0} .MathJax:focus, body :focus .MathJax {display: inline-table} .MathJax.MathJax_FullWidth {text-align: center; display: table-cell!important; width: 10000em!important} .MathJax img, .MathJax nobr, .MathJax a {border: 0; padding: 0; margin: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; vertical-align: 0; line-height: normal; text-decoration: none} img.MathJax_strut {border: 0!important; padding: 0!important; margin: 0!important; vertical-align: 0!important} .MathJax span {display: inline; position: static; border: 0; padding: 0; margin: 0; vertical-align: 0; line-height: normal; text-decoration: none} .MathJax nobr {white-space: nowrap!important} .MathJax img {display: inline!important; float: none!important} .MathJax * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none} .MathJax_Processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden} .MathJax_Processed {display: none!important} .MathJax_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none} .MathJax .MathJax_EmBox {display: block!important; overflow: hidden; width: 1px; height: 60em; min-height: 0; max-height: none} .MathJax_LineBox {display: table!important} .MathJax_LineBox span {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0} .MathJax .MathJax_HitBox {cursor: text; background: white; opacity: 0; filter: alpha(opacity=0)} .MathJax .MathJax_HitBox * {filter: none; opacity: 1; background: transparent} #MathJax_Tooltip * {filter: none; opacity: 1; background: transparent} @font-face {font-family: MathJax_Main; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Regular.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Main-Regular.otf?V=2.7.2') format('opentype')} @font-face {font-family: MathJax_Main-bold; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Bold.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Main-Bold.otf?V=2.7.2') format('opentype')} @font-face {font-family: MathJax_Main-italic; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Italic.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Main-Italic.otf?V=2.7.2') format('opentype')} @font-face {font-family: MathJax_Math-italic; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Math-Italic.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Math-Italic.otf?V=2.7.2') format('opentype')} @font-face {font-family: MathJax_Caligraphic; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Regular.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Caligraphic-Regular.otf?V=2.7.2') format('opentype')} @font-face {font-family: MathJax_Size1; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Size1-Regular.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Size1-Regular.otf?V=2.7.2') format('opentype')} @font-face {font-family: MathJax_Size2; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Size2-Regular.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Size2-Regular.otf?V=2.7.2') format('opentype')} @font-face {font-family: MathJax_Size3; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Size3-Regular.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Size3-Regular.otf?V=2.7.2') format('opentype')} @font-face {font-family: MathJax_Size4; src: url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/woff/MathJax_Size4-Regular.woff?V=2.7.2') format('woff'), url('https://csdnimg.cn/release/blog_mathjax/fonts/HTML-CSS/TeX/otf/MathJax_Size4-Regular.otf?V=2.7.2') format('opentype')} .MathJax .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}</style>  
+ </head> 
+ <body class="nodata " style="">    
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css">  
+  <div class="main_father clearfix d-flex justify-content-center " style="height:100%;"> 
+   <div class="container clearfix " id="mainBox">  
+    <main style="width:100%">  
+     <div class="blog-content-box"> 
+      <div class="article-header-box"> 
+       <div class="article-header"> 
+        <div class="article-title-box"> 
+         <h1 class="title-article" id="articleContentId">Pytorch 分布式 torch.distributed.send &amp; recv 报错</h1> 
+        </div> 
+        <div class="article-info-box"> 
+         <div class="article-bar-top"> 
+          <img class="article-type-img" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2Foriginal.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+          <div class="bar-content"> 
+           <img class="article-vip-img article-heard-img" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FidentityVip.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+           <span class="article-vip-text vip_article"> VIP文章</span> 
+           <a class="follow-nickName " href="https://blog.csdn.net/qq_37514135" target="_blank" rel="noopener">未知的生活</a> 
+           <img class="article-time-img article-heard-img" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnewCurrentTime2.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+           <span class="time">于&nbsp;2021-05-23 16:07:52&nbsp;发布</span> 
+           <img class="article-read-img article-heard-img" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FarticleReadEyes2.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+           <span class="read-count">196</span> 
+           <a id="blog_detail_zk_collection" class="un-collection" data-report-click="{&quot;mod&quot;:&quot;popu_823&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FtobarCollect2.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FtobarCollectionActive2.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> <span class="name">收藏</span> <span class="get-collection"> </span> </a> 
+          </div> 
+         </div> 
+         <div class="blog-tags-box"> 
+          <div class="tags-box artic-tag-box"> 
+           <span class="label">分类专栏：</span> 
+           <a class="tag-link" href="https://blog.csdn.net/qq_37514135/category_11082512.html" target="_blank" rel="noopener">编程bug</a> 
+           <span class="label">文章标签：</span> 
+           <a data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;pytorch&quot;,&quot;ab&quot;:&quot;new&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=pytorch&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">pytorch</a> 
+           <a data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;分布式计算&quot;,&quot;ab&quot;:&quot;new&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">分布式计算</a> 
+          </div> 
+         </div> 
+         <div class="slide-content-box"> 
+          <div class="article-copyright"> 
+           <div class="creativecommons">
+             版权声明：本文为博主原创文章，遵循
+            <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。 
+           </div> 
+           <div class="article-source-link">
+             本文链接：
+            <a href="https://blog.csdn.net/qq_37514135/article/details/117196294" target="_blank">https://blog.csdn.net/qq_37514135/article/details/117196294</a> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="operating"> 
+          <a class="href-article-edit slide-toggle">版权</a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <article class="baidu_pl"> 
+       <div id="article_content" class="article_content clearfix"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-163de54645.css"> 
+        <div id="content_views" class="markdown_views prism-atom-one-dark"> 
+         <svg xmlns="http://www.w3.org/2000/svg" style="display: none;"> 
+          <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path> 
+         </svg> 
+         <h1><a id="Pytorch__torchdistributedsend__recv_libcabi_terminating_with_uncaught_exception_of_type_glooEnforceNotMet_enforce_fail_at_Usersdistillerprojectcondacondabldpytorch_1595629430416workthird_partyglooglootransportuvpaircc248_opnread__oppreamblenbytes_0"></a>Pytorch 分布式 torch.distributed.send &amp; recv 报错：libc++abi: terminating with uncaught exception of type gloo::EnforceNotMet: [enforce fail at /Users/distiller/project/conda/conda-bld/pytorch_1595629430416/work/third_party/gloo/gloo/transport/uv/pair.cc:248] op.nread == op.preamble.nbytes.</h1> 
+         <h2><a id="_1"></a>问题搜索</h2> 
+         <p>经过百度和谷歌的搜索，都没有遇到类似的问题。</p> 
+         <h2><a id="_4"></a>使用测试样例查找问题原因</h2> 
+         <p>通过test.py进行测试：</p> 
+         <pre><code class="prism language-python"><span class="token keyword">import</span> os
+<span class="token keyword">import</span> torch
+<span class="token keyword">import</span> torch<span class="token punctuation">.</span>distributed <span class="token keyword">as</span> dist
+<span class="token keyword">from</span> torch<span class="token punctuation">.</span>multiprocessing <span class="token keyword">import</span> Process
+
+<span class="token keyword">def</span> <span class="token function">run</span><span class="token punctuation">(</span>rank<span class="token punctuation">,</span> size<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    tensor <span class="token operator">=</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span><span class="token punctuation">[</span>i <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    tensor2 <span class="token operator">=</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> rank <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+        tensor <span class="token operator">+=</span> <span class="token number">1</span>
+        tensor2 <span class="token operator">+=</span> <span class="token number">2</span>
+        <span class="token comment"># Send the tensor to process 1</span>
+        dist<span class="token punctuation">.</span>send<span class="token punctuation">(</span>tensor<span class="token operator">=</span>tensor<span class="token punctuation">,</span> dst<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+        dist<span class="token punctuation">.</span>send<span class="token punctuation">(</span>tensor<span class="token operator">=</span>tensor2<span class="token punctuation">,</span> dst<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token comment"># Receive tensor from process 0</span>
+        dist<span class="token punctuation">.</span>recv<span class="token punctuation">(</span>tensor<span class="token operator">=</span>tensor<span class="token punctuation">,</span> src<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span>
+        dist<span class="token punctuation">.</span>recv<span class="token punctuation">(</span>tensor<span class="token operator">=</span>tensor2<span class="token punctuation">,</span> src<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Rank '</span><span class="token punctuation">,</span> rank<span class="token punctuation">,</span> <span class="token string">' has data '</span><span class="token punctuation">,</span> tensor<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Rank '</span><span class="token punctuation">,</span> rank<span class="token punctuation">,</span> <span class="token string">' has data2 '</span><span class="token punctuation">,</span> tensor2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+    size <span class="token operator">=</span> <span class="token number">2</span>
+    processes <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token keyword">for</span> rank <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        p <span class="token operator">=</span> Process<span class="token punctuation">(</span>target<span class="token operator">=</span>init_process<span class="token punctuation">,</span> args<span class="token operator">=</span><span class="token punctuation">(</span>rank<span class="token punctuation">,</span> size<span class="token punctuation">,</span> run_block<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        p<span class="token punctuation">.</span>start<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        processes<span class="token punctuation">.</span>append<span class="token punctuation">(</span>p<span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> p <span class="token keyword">in</span> processes<span class="token punctuation">:</span>
+        p<span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre> 
+         <p>上述情况均可进行正常传输，如图所示：<br> <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fimg-blog.csdnimg.cn%2F20210523155902863.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt="在这里插入图片描述"></p> 
+         <h2><a id="_43"></a>观察有问题的代码与测试样例的不同</h2> 
+         <p>出现报错的代码如下：</p> 
+         <pre><code class="prism language-python"><span class="token keyword">if</span> local_rank <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+    datas<span class="token punctuation">,</span> targets <span class="token operator">=</span> train_set<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>targets<span class="token punctuation">)</span>
+    targets <span class="token operator">=</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>targets<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>datas<span class="token punctuation">.</span>size<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>targets<span class="token punctuation">.</span>size<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    dist<span class="token punctuation">.</span>send<span class="token punctuation">(</span>datas<span class="token punctuation">,</span> dst<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+    dist<span class="token punctuation">.</span>send<span class="token punctuation">(</span>targets<span class="token punctuation">,</span> dst<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>torch<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span>datas<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>targets<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Sent all datasets."</span><span class="token punctuation">)</span>
+<span class="token keyword">else</span><span class="token punctuation">:</span>
+    datas <span class="token operator">=</span> torch<span class="token punctuation">.</span>zeros<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">28</span><span class="token punctuation">,</span> <span class="token number">28</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    targets <span class="token operator">=</span> torch<span class="token punctuation">.</span>zeros<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    dist<span class="token punctuation">.</span>recv<span class="token punctuation">(</span>datas<span class="token punctuation">,</span> src<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span>
+    dist<span class="token punctuation">.</span>recv<span class="token punctuation">(</span>targets<span class="token punctuation">,</span> src<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>torch<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span>datas<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>targets<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Received dataset from rank 0."</span><span class="token punctuation">)</span>
+</code></pre> 
+         <p>经测试，在单独发送datas时可以正常接受，但是datas和targets同时发送时会报错：<br> <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fimg-blog.csdnimg.cn%2F20210523160347719.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt="在这里插入图片描述"></p> 
+         <h2><a id="_70"></a>问题解决方案</h2> 
+         <p>原来是数据发送和数据输入的类型不同导致，发送时targets为long类型，接收时targets使用torch.zeros新建时默认时float类型，因此导致发送和接受对应的字节大小不同，导致问题。</p> 
+         <p>修改为如下代码可以正常运行：</p> 
+         <pre><code class="prism language-python">targets <span class="token operator">=</span> torch<span class="token punctuation">.</span>zeros<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">long</span><span class="token punctuation">)</span>
+</code></pre> 
+        </div> 
+        <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/markdown_views-3fd7f7a902.css" rel="stylesheet"> 
+        <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/style-49037e4d27.css" rel="stylesheet"> 
+       </div> 
+       <div id="treeSkill"></div> 
+      </article>  
+     </div> 
+     <div class="more-toolbox-new" id="toolBarBox"> 
+      <div class="left-toolbox"> 
+       <div class="toolbox-left"> 
+        <div class="profile-box">
+         <a class="profile-href" target="_blank" href="https://blog.csdn.net/qq_37514135"><img class="profile-img" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fprofile.csdnimg.cn%2F2%2FA%2F0%2F3_qq_37514135&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294"><span class="profile-name">未知的生活</span></a>
+        </div> 
+        <div class="profile-attend"> 
+         <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;extend1&quot;:&quot;关注&quot;}">关注</a> 
+         <a class="tool-item-follow active-animation" style="display:none;">关注</a> 
+        </div> 
+       </div> 
+       <div class="toolbox-middle">  
+       </div> 
+       <div class="toolbox-right"> 
+        <div class="tool-directory"> 
+         <a class="bt-columnlist-show" data-id="11082512" data-free="true" data-subscribe="false" data-title="编程bug" data-img="https://img-blog.csdnimg.cn/20201014180756919.png?x-oss-process=image/resize,m_fixed,h_64,w_64" data-url="https://blog.csdn.net/qq_37514135/category_11082512.html" data-sum="3" data-people="0" data-price="0" data-oldprice="0" data-join="false" data-studyvip="false" data-studysubscribe="false" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}">专栏目录</a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>        
+     <a id="commentBox" name="commentBox"></a>   
+     <div id="recommendNps" class="recommend-nps-box common-nps-box"> 
+      <h3 class="aside-title">“相关推荐”对你有帮助么？</h3> 
+      <div class="aside-content"> 
+       <ul class="newnps-list"> 
+        <li class="newnps-item" data-type="非常没帮助"> 
+         <div class="newnps-img-box"> 
+          <img class="newnps-img active" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeel1.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+          <img class="newnps-img default" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeelGrey1.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+         </div> 
+         <div class="newnps-text">
+          非常没帮助
+         </div> </li> 
+        <li class="newnps-item" data-type="没帮助"> 
+         <div class="newnps-img-box"> 
+          <img class="newnps-img active" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeel2.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+          <img class="newnps-img default" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeelGrey2.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+         </div> 
+         <div class="newnps-text">
+          没帮助
+         </div> </li> 
+        <li class="newnps-item" data-type="一般"> 
+         <div class="newnps-img-box"> 
+          <img class="newnps-img active" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeel3.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+          <img class="newnps-img default" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeelGrey3.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+         </div> 
+         <div class="newnps-text">
+          一般
+         </div> </li> 
+        <li class="newnps-item" data-type="有帮助"> 
+         <div class="newnps-img-box"> 
+          <img class="newnps-img active" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeel4.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+          <img class="newnps-img default" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeelGrey4.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+         </div> 
+         <div class="newnps-text">
+          有帮助
+         </div> </li> 
+        <li class="newnps-item" data-type="非常有帮助"> 
+         <div class="newnps-img-box"> 
+          <img class="newnps-img active" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeel5.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+          <img class="newnps-img default" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnpsFeelGrey5.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+         </div> 
+         <div class="newnps-text">
+          非常有帮助
+         </div> </li> 
+       </ul> 
+       <div class="newnps-form-box"> 
+        <div class="newnps-form"> 
+         <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input"> 
+         <span class="newnps-btn">提交</span> 
+        </div> 
+       </div> 
+      </div> 
+     </div>     
+    </main>     
+   </div> 
+   <div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div id="recommend-right"> 
+      <div class="flex-column aside-box groupfile" id="groupfile"> 
+       <div class="groupfile-div"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="aside-box kind_person d-flex flex-column"> 
+       <h3 class="aside-title">分类专栏</h3> 
+       <div class="align-items-stretch kindof_item" id="kind_person_column"> 
+        <div class="aside-content"> 
+         <ul> 
+          <li> <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/qq_37514135/category_11777249.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_37514135/category_11777249.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fimg-blog.csdnimg.cn%2F20201014180756928.png%3Fx-oss-process%3Dimage%2Fresize%2Cm_fixed%2Ch_64%2Cw_64&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 日常 </span> </a> <span class="special-column-num">1篇</span> </li> 
+          <li> <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/qq_37514135/category_11082512.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_37514135/category_11082512.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fimg-blog.csdnimg.cn%2F20201014180756919.png%3Fx-oss-process%3Dimage%2Fresize%2Cm_fixed%2Ch_64%2Cw_64&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 编程bug </span> </a> <span class="special-column-num">3篇</span> </li> 
+          <li> <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/qq_37514135/category_9567319.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_37514135/category_9567319.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fimg-blog.csdnimg.cn%2F20201014180756724.png%3Fx-oss-process%3Dimage%2Fresize%2Cm_fixed%2Ch_64%2Cw_64&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> tensorflow </span> </a> <span class="special-column-num">1篇</span> </li> 
+          <li> <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/qq_37514135/category_7709286.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_37514135/category_7709286.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fimg-blog.csdnimg.cn%2F20201014180756918.png%3Fx-oss-process%3Dimage%2Fresize%2Cm_fixed%2Ch_64%2Cw_64&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> jvm gc </span> </a> <span class="special-column-num">1篇</span> </li> 
+         </ul> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+   <div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div id="recommend-right-concision"> 
+      <div class="flex-column aside-box groupfile" id="groupfileConcision"> 
+       <div class="groupfile-div1"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+  </div> 
+  <div class="mask-dark"></div>  
+  <div class="skin-boxshadow"></div> 
+  <div class="directory-boxshadow"></div> 
+  <div id="rewardNew" class="reward-popupbox-new"> 
+   <p class="rewad-title">打赏作者<span class="reward-close"><img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FcloseBt.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294"></span></p> 
+   <dl class="profile-box"> 
+    <dd> 
+     <a href="https://blog.csdn.net/qq_37514135" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_37514135&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fprofile.csdnimg.cn%2F2%2FA%2F0%2F3_qq_37514135&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" class="avatar_pic"> </a> 
+    </dd> 
+    <dt> 
+     <p class="blog-name">未知的生活</p> 
+     <p class="blog-discript">你的鼓励将是我创作的最大动力</p> 
+    </dt> 
+   </dl> 
+   <div class="reward-box-new"> 
+    <div class="reward-content">
+     <div class="reward-right"></div>
+    </div> 
+   </div> 
+   <div class="money-box"> 
+    <span class="choose-money choosed" data-id="2">¥2</span> 
+    <span class="choose-money " data-id="4">¥4</span> 
+    <span class="choose-money " data-id="6">¥6</span> 
+    <span class="choose-money " data-id="10">¥10</span> 
+    <span class="choose-money " data-id="20">¥20</span> 
+    <input id="customizeMoney" class="customize-money" name="" type="" value="" placeholder="自定义"> 
+    <div class="customize-tip">
+     输入1-500的整数
+    </div> 
+   </div> 
+   <div class="pay-box"> 
+    <div class="pay-type-blance pay-type active" data-type="blance"> 
+     <img class="unchoose" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnewUnChoose.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+     <img class="choose" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnewChoose.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+     <span class="pay-type-name">余额支付</span> 
+     <span class="pay-type-num">(余额：-- )</span> 
+    </div> 
+    <div class="pay-type-money pay-type" data-type="money"> 
+     <img class="unchoose" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnewUnChoose.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+     <img class="choose" src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnewChoose.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+     <span class="pay-type-name">扫码支付</span> 
+    </div> 
+   </div> 
+   <div class="sure-box"> 
+    <div class="sure-box-money"> 
+     <div class="code-box"> 
+      <div class="code-num-box"> 
+       <span class="code-name">扫码支付：</span>
+       <span class="code-num">¥2</span> 
+      </div> 
+      <div class="code-img-box"> 
+       <div class="renovate"> 
+        <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2Fpay-time-out.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294"> 
+        <span>获取中</span> 
+       </div> 
+      </div> 
+      <div class="code-pay-box"> 
+       <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnewWeiXin.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+       <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2FnewZhiFuBao.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+       <span>扫码支付</span> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="sure-box-blance"> 
+     <p class="tip">您的余额不足，请更换扫码支付或<a target="_blank" data-report-click="{&quot;mod&quot;:&quot;1597646289_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4302&quot;}" href="https://i.csdn.net/#/wallet/balance/recharge?utm_source=RewardVip" class="go-invest">充值</a></p> 
+     <p class="is-have-money"><a class="reward-sure">打赏作者</a></p> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="pay-code"> 
+   <div class="pay-money">
+    实付
+    <span class="pay-money-span" data-nowprice="" data-oldprice="">元</span>
+   </div> 
+   <div class="content-blance">
+    <a class="blance-bt" href="javascript:;">使用余额支付</a>
+   </div> 
+   <div class="content-code"> 
+    <div id="payCode" data-id=""> 
+     <div class="renovate"> 
+      <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2Fpay-time-out.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294"> 
+      <span>点击重新获取</span> 
+     </div> 
+    </div> 
+    <div class="pay-style">
+     <span><img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2Fweixin.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294"></span>
+     <span><img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2Fzhifubao.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294"></span>
+     <span><img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2Fjingdong.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294"></span>
+     <span class="text">扫码支付</span>
+    </div> 
+   </div> 
+   <div class="bt-close">
+    <svg t="1567152543821" class="icon" viewbox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12">
+     <defs>
+      <style type="text/css"></style>
+     </defs>
+     <path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path>
+    </svg>
+   </div> 
+   <!-- <p style="margin-top: 8px;font-size: 14px;" class="text-center">支付成功即可阅读</p> --> 
+   <div class="pay-balance"> 
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span> 
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span> 
+    <div class="pay-code-tile"> 
+     <img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2Fpay-help.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""> 
+     <div class="pay-code-content"> 
+      <div class="span"> 
+       <p class="title">抵扣说明：</p> 
+       <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、C币套餐、付费专栏及课程。</p> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="http://pucsdn.com/main/csdn/img?url=https%3A%2F%2Fcsdnimg.cn%2Frelease%2Fblogv2%2Fdist%2Fpc%2Fimg%2Frecharge.png&amp;rfUrl=https%3A%2F%2Fblog.csdn.net%2Fqq_37514135%2Farticle%2Fdetails%2F117196294" alt=""><span>余额充值</span></a> 
+  </div> 
+  <div style="display:none;">  
+  </div> 
+  <div class="keyword-dec-box" id="keywordDecBox"></div>     
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-light.css">                  
+ </body>
+</html>
